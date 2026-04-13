@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 from typing import List, Dict
+from dotenv import load_dotenv, find_dotenv
 from tools.historical_data_tool import historical_data_tool_func
 from tools.get_current_market_data import get_current_market_data
 from tools.orchestrator import get_orchestrator_response
 
 from agent_implementation import agent
+
 
 app = FastAPI()
 

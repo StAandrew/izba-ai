@@ -2,9 +2,8 @@ import json
 import os
 import requests
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv("/Users/stas_chi/Documents/Projects/Izba AI/izba-ai/backend/.env")
 
 def use_search_engine(input: str) -> str:
     """This tool takes in some string as an input and provides a result of a basic internet search as a string.
@@ -15,6 +14,7 @@ def use_search_engine(input: str) -> str:
     URL = "https://api.tavily.com/search"
 
     # Define the parameters for the API request
+    load_dotenv(find_dotenv())
     payload = {
         "api_key": os.environ.get("TAVILY_API_KEY"),
         "query": input,

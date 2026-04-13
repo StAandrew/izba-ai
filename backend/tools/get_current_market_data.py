@@ -4,20 +4,24 @@ import pandas as pd
 import sqlite3
 import babel.numbers
 import decimal
+import sys
+import locale
 
+from pathlib import Path
 from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader, Template
 from openai import OpenAI
 
-load_dotenv("/Users/stas_chi/Documents/Projects/Izba AI/izba-ai/backend/.env")
+load_dotenv()
+
 
 llm_client = OpenAI(
     base_url="https://api.studio.nebius.ai/v1/",
     api_key=os.environ.get("NEBIUS_API_KEY"),
 )
 
-file_loader = FileSystemLoader("/Users/stas_chi/Documents/Projects/Izba AI/izba-ai/backend/prompts")  # Specify the directory containing your template file
-env = Environment(loader=file_loader)
+file_loader = Path(__file__).resolve().parent.parent.joinpath("prompts").resolve()
+env = Environment(loader=FileSystemLoader(str(file_loader)))
 
 columns = [
     'id',
@@ -41,6 +45,7 @@ columns = [
 ]
 
 def get_current_market_data(user_query: str) -> dict[str,str]:
+
     """Tool that has access to all current properties for sale listings data in Kensington and Chelsea. 
 
     This tool always provides all info that you need about current listings.
@@ -76,7 +81,8 @@ def get_current_market_data(user_query: str) -> dict[str,str]:
         print("Failed to load JSON from LLM output")
 
     # Step 1: Connect to the SQLite database (or create it if it doesn't exist)
-    conn = sqlite3.connect('/Users/stas_chi/Documents/Projects/Izba AI/izba-ai/backend/databases/scraped_listings.db')  # Replace with your database file
+    file_path = Path(__file__).resolve().parent.parent.joinpath("databases", "scraped_listings.db").resolve()
+    conn = sqlite3.connect(file_path)
 
     # Step 2: Create a cursor object
     cursor = conn.cursor()
@@ -89,8 +95,8 @@ def get_current_market_data(user_query: str) -> dict[str,str]:
 
     # Print the results
     df = pd.DataFrame(
-        data = rows,
-        columns = columns
+        data=rows,
+        columns=columns
     )
     # Step 5: Close the connection
     conn.close()

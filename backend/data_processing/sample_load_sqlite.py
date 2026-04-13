@@ -1,7 +1,8 @@
 import sqlite3
+from pathlib import Path
 
-# Step 1: Connect to the SQLite database (or create it if it doesn't exist)
-conn = sqlite3.connect('/Users/stas_chi/Documents/Projects/Izba AI/izba-ai/backend/databases/price_paid_data.db')  # Replace with your database file
+db_path = Path(__file__).resolve().parent.joinpath("databases", "price_paid_data.db").resolve()
+conn = sqlite3.connect(db_path)
 
 # Step 2: Create a cursor object
 cursor = conn.cursor()

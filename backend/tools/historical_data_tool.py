@@ -2,19 +2,21 @@ import json
 import os
 import sqlite3
 
-from dotenv import load_dotenv
+from pathlib import Path
+from dotenv import load_dotenv, find_dotenv
 from jinja2 import Environment, FileSystemLoader, Template
 from openai import OpenAI
 
-load_dotenv(".env")
 
+load_dotenv(find_dotenv())
 llm_client = OpenAI(
     base_url="https://api.studio.nebius.ai/v1/",
     api_key=os.environ.get("NEBIUS_API_KEY"),
 )
 
-file_loader = FileSystemLoader("/Users/stas_chi/Documents/Projects/Izba AI/izba-ai/backend/prompts")  # Specify the directory containing your template file
-env = Environment(loader=file_loader)
+file_loader = Path(__file__).resolve().parent.parent.joinpath("prompts").resolve()
+env = Environment(loader=FileSystemLoader(str(file_loader)))
+
 
 def historical_data_tool_func(user_query: str) -> dict[str,str]:
     """Tool that has access to all historical transactions of UK properties since 1995.
@@ -26,6 +28,7 @@ def historical_data_tool_func(user_query: str) -> dict[str,str]:
     }
     """
     template = env.get_template('historical_data_to_sql.jinja2')
+    print(template)
     # Render the template
     prompt = template.render(
         user_query = user_query
@@ -54,7 +57,10 @@ def historical_data_tool_func(user_query: str) -> dict[str,str]:
         print("Failed to load JSON from LLM output")
 
     # Step 1: Connect to the SQLite database (or create it if it doesn't exist)
-    conn = sqlite3.connect('/Users/stas_chi/Documents/Projects/Izba AI/izba-ai/backend/databases/price_paid_data.db')  # Replace with your database file
+    db_path = Path(__file__).resolve().parent.parent.joinpath("databases", "price_paid_data.db").resolve()
+    print("db path")
+    print(db_path)
+    conn = sqlite3.connect(db_path)
 
     # Step 2: Create a cursor object
     cursor = conn.cursor()

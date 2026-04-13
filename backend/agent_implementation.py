@@ -1,7 +1,7 @@
 import json
 import os
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from typing import Optional, List, Mapping, Any
 
 from tools.historical_data_tool import historical_data_tool_func
@@ -9,8 +9,6 @@ from tools.search_engine import use_search_engine
 from tools.get_nearby_cafe import get_nearby_cafe
 from tools.get_time_to_work import get_time_to_work
 from tools.get_current_market_data import get_current_market_data
-
-load_dotenv("/Users/stas_chi/Documents/Projects/Izba AI/izba-ai/backend/.env")
 
 from openai import OpenAI
 from llama_index.core.agent import ReActAgent
@@ -23,6 +21,7 @@ from llama_index.core.llms import (
 )
 from llama_index.core.llms.callbacks import llm_completion_callback
 from llama_index.core import Settings
+
 
 class NebiusLLM(CustomLLM):
     context_window: int = 128e3
@@ -41,6 +40,7 @@ class NebiusLLM(CustomLLM):
 
     @llm_completion_callback()
     def complete(self, prompt: str, **kwargs: Any) -> CompletionResponse:
+        load_dotenv(find_dotenv())
         client = OpenAI(
             base_url=os.environ.get("NEBIUS_BASE_URL"),
             api_key=os.environ.get("NEBIUS_API_KEY"),

@@ -1,9 +1,11 @@
 import requests
 import streamlit as st
 import babel.numbers
+
 import decimal
 
 URL = "http://127.0.0.1:8080/"
+
 
 st.title("Izba AI")
 
@@ -56,4 +58,3 @@ for chat in st.session_state['chat_history']:
                         st.write(f"**Address**: {property['address']}")
                         st.write(f"**Postcode**: {property['postcode']}")
 
-            # st.image(chat["images"][-1], width=350)

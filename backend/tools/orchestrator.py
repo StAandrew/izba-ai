@@ -2,19 +2,19 @@ import json
 import os
 import sqlite3
 
-from dotenv import load_dotenv
+from pathlib import Path
+from dotenv import load_dotenv, find_dotenv
 from jinja2 import Environment, FileSystemLoader, Template
 from openai import OpenAI
 
-load_dotenv(".env")
-
+load_dotenv(find_dotenv())
 llm_client = OpenAI(
     base_url="https://api.studio.nebius.ai/v1/",
     api_key=os.environ.get("NEBIUS_API_KEY"),
 )
 
-file_loader = FileSystemLoader("/Users/stas_chi/Documents/Projects/Izba AI/izba-ai/backend/prompts")  # Specify the directory containing your template file
-env = Environment(loader=file_loader)
+file_loader = Path(__file__).resolve().parent.parent.joinpath("prompts").resolve()
+env = Environment(loader=FileSystemLoader(str(file_loader)))
 
 def get_orchestrator_response(user_query: str) -> dict[str,str]:
     template = env.get_template('orchestrator.jinja2')

@@ -5,17 +5,16 @@ import sys
 from pydantic import BaseModel, Field
 from typing import List
 from firecrawl import FirecrawlApp
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from pathlib import Path
 
-PAGES_TO_SCRAPE = 10
+PAGES_TO_SCRAPE = 20
 STOP_ON_ERROR = False
 
 
 def add_listings_to_db(listings):
     db_file = 'scraped_listings.db'
-    file_path = Path().resolve().parent.joinpath("backend", "databases", db_file).resolve()
-    print(file_path)
+    file_path = Path(__file__).resolve().parent.joinpath("backend", "databases", db_file).resolve()
     conn = sqlite3.connect(file_path)
     cursor = conn.cursor()
     cursor.execute('''
@@ -81,7 +80,7 @@ def add_listings_to_db(listings):
 
 
 def scrape_search_page(index=0):
-    load_dotenv()
+    load_dotenv(find_dotenv())
     app = FirecrawlApp(api_key=os.getenv('FIRECRAWL_API_KEY'))
 
     class PropertySchema(BaseModel):
